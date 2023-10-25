@@ -1,5 +1,5 @@
 {
-  "name": "t",
+  "name": "three",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -11,6 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "gsap": "^3.12.2",
+    "parcel": "^2.10.1",
     "three": "^0.157.0",
     "troika-three-text": "^0.48.0"
   },
