@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import gsap from "gsap";
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
 // Canvas
 const canvas = document.querySelector('.canvas');
@@ -17,14 +17,50 @@ scene.add(mesh);
 
 // Sizes
 const sizes = {
-    width: 800,
-    height: 600,
+    width: window.innerWidth,
+    height: window.innerHeight,
 }
+
+window.addEventListener('resize', () => {
+    // Update sizes
+    sizes.width = window.innerWidth;
+    sizes.height = window.innerHeight;
+
+    // Update camera
+    camera.aspect = sizes.width / sizes.height;
+    camera.updateProjectionMatrix();
+
+    // Update renderer
+    renderer.setSize(sizes.width, sizes.height);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+});
+
+window.addEventListener('dblclick', () => {
+    const fullscreenElement = document.fullscreenElement || document.webkitFullscreenElement;
+
+    if (!fullscreenElement) {
+        if (canvas.requestFullscreen) {
+            canvas.requestFullscreen();
+        } else if (canvas.webkitRequestFullscreen) {
+            canvas.webkitRequestFullscreen();
+        }
+    } else {
+        if (document.exitFullscreen) {
+            document.exitFullscreen();
+        } else if (document.webkitExitFullscreen) {
+            document.webkitExitFullscreen();
+        }
+    }
+});
 
 // Camera
 const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height);
 camera.position.z = 3;
 scene.add(camera);
+
+// Controls
+const controls = new OrbitControls(camera, canvas);
+controls.enableDamping = true;
 
 // Renderer
 const renderer = new THREE.WebGLRenderer({
@@ -41,9 +77,9 @@ const clock = new THREE.Clock();
     const elapsedTime = clock.getElapsedTime();
 
     // Update objects
-    mesh.position.x = Math.sin(elapsedTime);
-    mesh.position.y = Math.cos(elapsedTime);
-    camera.lookAt(mesh.position);
+
+    // Update controls
+    controls.update();
 
     // render
     renderer.render(scene, camera);
