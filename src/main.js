@@ -1,15 +1,58 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
-import * as dat from 'dat.gui';
-import gsap from "gsap";
+import colorTextureImage from '../static/textures/minecraft.png';
+import alphaTextureImage from '../static/textures/door/alpha.jpg';
+import heightTextureImage from '../static/textures/door/height.jpg';
+import normalTextureImage from '../static/textures/door/normal.jpg';
+import ambientOcclusionTextureImage from '../static/textures/door/ambientOcclusion.jpg';
+import metalnessTextureImage from '../static/textures/door/metalness.jpg';
+import roughnessTextureImage from '../static/textures/door/roughness.jpg';
 
 /**
- * Debug
+ * Textures
  */
-const gui = new dat.GUI({
-    closed: true,
-});
-// gui.hide();
+const loadingManager = new THREE.LoadingManager();
+
+loadingManager.onStart = () => {
+    console.log('started');
+};
+loadingManager.onLoad = () => {
+    console.log('loaded');
+};
+loadingManager.onProgress = () => {
+    console.log('progress');
+};
+loadingManager.onError = () => {
+    console.log('error');
+}
+
+
+const textureLoader = new THREE.TextureLoader(loadingManager);
+const colorTexture = textureLoader.load(colorTextureImage);
+const alphaTexture = textureLoader.load(alphaTextureImage);
+const heightTexture = textureLoader.load(heightTextureImage);
+const normalTexture = textureLoader.load(normalTextureImage);
+const ambientOcclusionTexture = textureLoader.load(ambientOcclusionTextureImage);
+const metalnessTexture = textureLoader.load(metalnessTextureImage);
+const roughnessTexture = textureLoader.load(roughnessTextureImage);
+
+// colorTexture.repeat.x = 2;
+// colorTexture.repeat.y = 3;
+// colorTexture.wrapS = THREE.RepeatWrapping;
+// colorTexture.wrapT = THREE.RepeatWrapping;
+
+// colorTexture.offset.x = 0.5;
+// colorTexture.offset.y = 0.5;
+
+// colorTexture.rotation = Math.PI / 4;
+// colorTexture.center.x = 0.5;
+// colorTexture.center.y = 0.5;
+
+// colorTexture.generateMipmaps = false;
+// colorTexture.minFilter = THREE.NearestFilter;
+
+// makes the texture blurry sharp
+colorTexture.magFilter = THREE.NearestFilter;
 
 // Canvas
 const canvas = document.querySelector('.canvas');
@@ -20,24 +63,11 @@ const scene = new THREE.Scene();
 
 // Object
 const geometry = new THREE.BoxGeometry(1, 1, 1);
-const material = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+console.log(geometry.attributes.uv);
+const material = new THREE.MeshBasicMaterial({ map: colorTexture });
 const mesh = new THREE.Mesh(geometry, material);
 scene.add(mesh);
 
-// Debug
-gui.add(mesh.position, 'y', -3, 3, 0.01);
-gui.add(mesh.position, 'x').min(-3).max(3).step(0.01);
-gui.add(material, 'wireframe');
-const parameters = {
-    color: 0xff0000,
-    spin: () => {
-        gsap.to(mesh.rotation, { duration: 1, y: mesh.rotation.y + 10 });
-    }
-}
-gui.addColor(parameters, 'color').onChange(() => {
-    material.color.set(parameters.color);
-});
-gui.add(parameters, 'spin');
 
 // Sizes
 const sizes = {
@@ -79,7 +109,7 @@ window.addEventListener('dblclick', () => {
 
 // Camera
 const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height);
-camera.position.z = 3;
+camera.position.z = 1.5;
 scene.add(camera);
 
 // Controls
